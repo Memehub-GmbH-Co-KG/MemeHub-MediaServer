@@ -1,0 +1,19 @@
+{
+  "name": "memehub-downloader",
+  "version": "1.0.0",
+  "description": "Downloads memes and stores them locally",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "file-type": "^14.1.3",
+    "lowdb": "^1.0.0",
+    "node-fetch": "^2.6.0",
+    "redis-request-broker": "^1.3.0",
+    "telegraf": "^3.36.0"
+  }
+}
