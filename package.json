@@ -12,7 +12,7 @@
     "dotenv": "^8.2.0",
     "file-type": "^14.1.4",
     "lowdb": "^1.0.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "redis-request-broker": "^1.4.0",
     "telegraf": "^3.37.0"
   }
