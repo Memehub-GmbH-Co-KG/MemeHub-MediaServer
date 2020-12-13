@@ -2,15 +2,16 @@ const lowdb = require('lowdb');
 const FileAsync = require('lowdb/adapters/FileAsync');
 require('dotenv').config();
 
-const collection = process.env.LOCAL_DB_COLLECTION;
-const adapter = new FileAsync(process.env.LOCAL_DB_FILE);
+let collection = process.env.LOCAL_DB_COLLECTION;
 let db;
 
-(async () => {
+module.exports.init = async function (config) {
+    collection = config.local_db_collection;
+    const adapter = new FileAsync(config.local_db_file);
     db = await lowdb(adapter);
     await db.defaults({ [collection]: [] })
         .write();
-})();
+}
 
 const requiredAttributes = [
     'id',

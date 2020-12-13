@@ -6,15 +6,18 @@ const fetch = require('node-fetch');
 const db = require('./db');
 require('dotenv').config();
 
-const telegram = new Telegram(process.env.BOT_TOKEN);
-(async () => {
+let telegram;
+let config;
+module.exports.init = async function init(_config) {
+    config = _config;
+    telegram = new Telegram(config.token);
     try {
-        await fas.mkdir(process.env.MEME_PATH);
+        await fs.mkdir(config.cache_path);
     }
-    catch (_) {
-        //ignore
+    catch (e) {
+        console.log("Failed to create cache directory")
     }
-})();
+}
 
 /**
  * Downloads a meme, saves it locally and returns the file path.
@@ -22,9 +25,10 @@ const telegram = new Telegram(process.env.BOT_TOKEN);
  */
 module.exports.downloadMeme = async function downloadMeme(memeId) {
     try {
+        console.log("Downloading", memeId);
         const link = await telegram.getFileLink(memeId)
         const res = await fetch(link);
-        if (!res.ok) 
+        if (!res.ok)
             throw "Failed to download file: invalid status code.";
 
         const buffer = await res.buffer();
@@ -34,14 +38,14 @@ module.exports.downloadMeme = async function downloadMeme(memeId) {
             throw 'Faild to download file: Cannot determine file type.';
 
         const relPath = `${memeId}.${type.ext}`;
-        const path = Path.join(process.env.MEME_PATH, relPath);
-        fs.writeFile(path, buffer);
+        const path = Path.join(config.cache_path, relPath);
+        await fs.writeFile(path, buffer);
 
         const meta = {
             id: memeId,
             ext: type.ext,
             mime: type.mime,
-            path: relPath
+            path
         };
         await db.add(meta);
         return meta;
