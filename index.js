@@ -5,40 +5,68 @@ const app = new Koa();
 const db = require('./cache');
 const dl = require('./download');
 // response
-app.use(downloadOrGet);
+app.use(onRequest);
+
+const actions = {
+    'meta': getMeta,
+    'file': getFile,
+}
 
 let server;
 
-async function downloadOrGet(ctx, next) {
-
-    console.log("request", ctx.request);
+async function onRequest(ctx, next) {
+    console.log("Request", ctx.request);
 
     if (ctx.request.method !== 'GET')
         return await next();
 
+    const location = ctx.request.path.split('/');
+
     try {
-        const id = ctx.request.path.substring(1);
-        let meta = await db.get(id);
-        if (!meta)
-            meta = await dl.downloadMeme(id);
+        // Index
+        if (location.length < 2)
+            return 'OK';
 
-        if (!meta) {
-            ctx.reponse.status = 404;
-            return;
-        }
+        // No action specified: request file
+        // Else: what ever defined
+        const id = action[1];
+        const action = location.length < 3
+            ? getFile
+            : actions[location[2]];
 
-        return await sendMedia(ctx, meta);
+        if (!action)
+            throw "Invalid action.";
+
+        return await action(ctx, id)
     }
     catch (error) {
         console.error(error);
-        throw "Failed to get meme.";
+        throw "Failed to handle request.";
     }
 }
 
-async function sendMedia(ctx, meta) {
-    await send(ctx, meta.path);
+async function getMeta(ctx, id) {
+    let meta = await db.get(id);
+    if (!meta)
+        meta = await dl.downloadMeme(id);
+
+    if (!meta) {
+        ctx.reponse.status = 404;
+        return;
+    }
+    return meta;
 }
 
+async function getFile(ctx, id) {
+    const meta = getMeta(ctx, id);
+    if (!meta) {
+        ctx.reponse.status = 404;
+        return;
+    }
+
+    return await send(ctx, meta.path);
+
+}
 
 async function restart() {
     console.log("Restarting...");
