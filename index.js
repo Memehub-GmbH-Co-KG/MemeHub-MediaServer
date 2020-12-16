@@ -15,12 +15,14 @@ const actions = {
 let server;
 
 async function onRequest(ctx, next) {
-    console.log("Request", ctx.request);
+    console.log("Request");
 
     if (ctx.request.method !== 'GET')
         return await next();
 
+
     const location = ctx.request.path.split('/');
+    console.log('GET', location);
 
     try {
         // Index
@@ -54,18 +56,21 @@ async function getMeta(ctx, id) {
         ctx.reponse.status = 404;
         return;
     }
+
+    ctx.body = meta;
     return meta;
 }
 
 async function getFile(ctx, id) {
-    const meta = await getMeta(ctx, id);
+    let meta = await db.get(id);
+    if (!meta)
+        meta = await dl.downloadMeme(id);
+
     if (!meta) {
         ctx.reponse.status = 404;
         return;
     }
-
     return await send(ctx, meta.path);
-
 }
 
 async function restart() {
