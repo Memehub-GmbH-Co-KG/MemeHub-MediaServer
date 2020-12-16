@@ -3,7 +3,7 @@ const Path = require('path');
 const Telegram = require('telegraf/telegram');
 const FileType = require('file-type');
 const fetch = require('node-fetch');
-const db = require('./db');
+const db = require('./cache');
 require('dotenv').config();
 
 let telegram;
@@ -11,12 +11,6 @@ let config;
 module.exports.init = async function init(_config) {
     config = _config;
     telegram = new Telegram(config.token);
-    try {
-        await fs.mkdir(config.cache_path);
-    }
-    catch (e) {
-        console.log("Failed to create cache directory")
-    }
 }
 
 /**

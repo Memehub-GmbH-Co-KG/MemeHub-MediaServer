@@ -2,7 +2,7 @@ const { Client, Defaults, Subscriber } = require('redis-request-broker')
 const send = require('koa-send');
 const Koa = require('koa');
 const app = new Koa();
-const db = require('./db');
+const db = require('./cache');
 const dl = require('./download');
 // response
 app.use(downloadOrGet);
@@ -114,6 +114,7 @@ async function setDefaultConfig() {
     const config = {
         port: 3344,
         cache_path: './cache',
+        cache_size: 100,
         local_db_file: './meme.json',
         local_db_collection: 'memes'
     }
