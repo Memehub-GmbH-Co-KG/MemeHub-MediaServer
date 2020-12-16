@@ -29,7 +29,7 @@ async function onRequest(ctx, next) {
 
         // No action specified: request file
         // Else: what ever defined
-        const id = action[1];
+        const id = location[1];
         const action = location.length < 3
             ? getFile
             : actions[location[2]];
