@@ -58,7 +58,7 @@ async function getMeta(ctx, id) {
 }
 
 async function getFile(ctx, id) {
-    const meta = getMeta(ctx, id);
+    const meta = await getMeta(ctx, id);
     if (!meta) {
         ctx.reponse.status = 404;
         return;
