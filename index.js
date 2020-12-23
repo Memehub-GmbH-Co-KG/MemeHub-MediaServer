@@ -1,10 +1,12 @@
 const { Client, Defaults, Subscriber } = require('redis-request-broker')
 const send = require('koa-send');
+const cors = require('koa-cors');
 const Koa = require('koa');
 const app = new Koa();
 const db = require('./cache');
 const dl = require('./download');
 // response
+app.use(cors());
 app.use(onRequest);
 
 const actions = {
